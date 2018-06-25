@@ -30,16 +30,15 @@ class LSH(data: RDD[(Long, SparseVector)] = null, m: Int = 0, numHashFunc: Int =
 
 
 
-    var datasets = (0 until numHashFunc * numHashTables).map(i => {
+    val rdd = sc.sparkContext.emptyRDD[((Long, Int), Int)]
+    (0 until numHashFunc * numHashTables).map(i => {
       val hasher = Hasher(m)
       saveHasher(modelOut+i, hasher)
 
       dataRDD
         .map(v => ((v._1, i % numHashTables), hasher.hash(v._2)))
 
-    })
-    val rdd = sc.sparkContext.emptyRDD[((Long, Int), Int)]
-    datasets.foldLeft(rdd)((dataset1, dataset2) => dataset1.union(dataset2))
+    }).foldLeft(rdd)((dataset1, dataset2) => dataset1.union(dataset2))
       .groupByKey()
       .map(x => ((x._1._1, x._2.mkString("")), x._1._2))
   }
