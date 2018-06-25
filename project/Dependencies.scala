@@ -4,7 +4,7 @@ object Dependencies {
 
   lazy val version = new {
     val scalaTest = "2.2.2"
-    val spark = "1.4.1"
+    val spark = "2.3.0"
   }
 
   lazy val library = new {
